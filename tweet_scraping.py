@@ -44,6 +44,8 @@ from pprint import pprint
 from wordcloud import STOPWORDS
 stopwords = set(STOPWORDS)
 
+from wordcloud import WordCloud
+
 import time
 
 
@@ -87,3 +89,21 @@ st.dataframe(data=reading_score_df)
 st.title("Average Reading Scores by Politician")
 mean_scores = senator_tweet_df.groupby(['username'])['flesch', 'flesch_grade', 'ari', 'dale_chall', 'readability_consensus', 'reading_time'].mean()
 st.dataframe(data=mean_scores)
+
+# topic modelling 
+
+# Remove punctuation
+reading_score_df['tweet_content'] = reading_score_df['tweet_content'].map(lambda x: re.sub('[,\.!?]', '', x))
+# Convert the titles to lowercase
+reading_score_df['tweet_content']  = reading_score_df['tweet_content'].map(lambda x: x.lower())
+
+# create a wordcloud 
+
+# Join the different processed titles together.
+long_string = ','.join(list(reading_score_df['tweet_content'].values))
+# Create a WordCloud object
+wordcloud = WordCloud(background_color="white", max_words=5000, contour_width=3, contour_color='steelblue')
+# Generate a word cloud
+wordcloud.generate(long_string)
+# Visualize the word cloud
+st.image(wordcloud.to_image(), caption='Tweet Wordcloud')
