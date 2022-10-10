@@ -75,4 +75,15 @@ my_bar.progress(5/6)
 senator_tweet_df['reading_time'] = senator_tweet_df['tweet_content'].apply(lambda s:textstat.reading_time(s))
 my_bar.progress(6/6)
 
-st.dataframe(data=senator_tweet_df)
+# st.dataframe(data=senator_tweet_df)
+# how can we integrate caching here 
+
+# create a new df to display reading scores only 
+st.title("Reading Scores")
+reading_score_df = senator_tweet_df[['username', 'tweet_content', 'flesch', 'flesch_grade', 'ari', 'dale_chall', 'readability_consensus', 'reading_time']]
+st.dataframe(data=reading_score_df)
+
+# average reading score by politician 
+st.title("Average Reading Scores by Politician")
+mean_scores = senator_tweet_df.groupby(['username'])['flesch', 'flesch_grade', 'ari', 'dale_chall', 'readability_consensus', 'reading_time'].mean()
+st.dataframe(data=mean_scores)
