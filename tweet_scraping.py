@@ -48,6 +48,12 @@ from wordcloud import WordCloud
 
 import time
 
+import gensim
+from gensim.utils import simple_preprocess
+import nltk
+nltk.download('stopwords')
+from nltk.corpus import stopwords
+
 
 nlp = spacy.load('en_core_web_lg')
 
@@ -107,3 +113,34 @@ wordcloud = WordCloud(background_color="white", max_words=5000, contour_width=3,
 wordcloud.generate(long_string)
 # Visualize the word cloud
 st.image(wordcloud.to_image(), caption='Tweet Wordcloud')
+
+
+# tokenize textual data 
+# this will be the input for the LDA model 
+# remove stopwrods also 
+# convert tokenized object into a corpus and dictionary 
+stop_words = stopwords.words('english')
+# add additional stopwords related to HTML stuff 
+stop_words.extend(['from', 'subject', 're', 'edu', 'use', 'https', 'tco', 'amp', 'oh', 'sya'])
+
+# tokenize sentences at the word level 
+def sent_to_words(sentences):
+    for sentence in sentences:
+        # deacc = True removes punctuations
+        yield(gensim.utils.simple_preprocess(str(sentence), deacc=True))
+
+
+def remove_stopwords(texts):
+    return [[word for word in simple_preprocess(str(doc)) 
+             if word not in stop_words] for doc in texts]
+
+
+data = reading_score_df.tweet_content.values.tolist()
+
+data_words = list(sent_to_words(data))
+
+# remove stop words
+data_words = remove_stopwords(data_words)
+st.write(data_words[:1][0][:30])
+st.write(data_words)
+
