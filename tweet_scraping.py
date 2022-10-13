@@ -45,6 +45,7 @@ from wordcloud import STOPWORDS
 stopwords = set(STOPWORDS)
 
 from wordcloud import WordCloud
+import gensim.corpora as corpora
 
 import time
 
@@ -61,7 +62,9 @@ nlp = spacy.load('en_core_web_lg')
 st.title('Tweet Scraper')
 
 # read tweets from before 
-senator_tweet_df = pd.read_csv('C:/Users/Admin/Documents/GitHub/politics_project/senator_tweets_df.csv')
+# senator_tweet_df = pd.read_csv('C:/Users/Admin/Documents/GitHub/politics_project/senator_tweets_df.csv')
+senator_tweet_df = pd.read_csv('senator_tweets_df.csv')
+
 
 # st.dataframe(data=senator_tweet_df)
 
@@ -142,5 +145,26 @@ data_words = list(sent_to_words(data))
 # remove stop words
 data_words = remove_stopwords(data_words)
 st.write(data_words[:1][0][:30])
-st.write(data_words)
+# st.write(data_words)
 
+# Create Dictionary
+id2word = corpora.Dictionary(data_words)
+# Create Corpus
+texts = data_words
+# Term Document Frequency
+corpus = [id2word.doc2bow(text) for text in texts]
+
+# View
+st.write(corpus[:1][0][:30])
+
+
+# LDA Topic modelling with 7 topics
+# number of topics
+num_topics = 7
+# Build LDA model
+lda_model = gensim.models.LdaMulticore(corpus=corpus,
+                                       id2word=id2word,
+                                       num_topics=num_topics)
+# Print the Keyword in the 10 topics
+st.write(lda_model.print_topics())
+doc_lda = lda_model[corpus]
