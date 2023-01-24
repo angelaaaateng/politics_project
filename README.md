@@ -7,4 +7,9 @@ Keeping voters informed, and analyzing political data
 
 
 ## Packages Used: 
+
+**Topic Modeling:**
 - BERTopic https://github.com/MaartenGr/BERTopic 
+
+**Deployment:**
+- Streamlit
